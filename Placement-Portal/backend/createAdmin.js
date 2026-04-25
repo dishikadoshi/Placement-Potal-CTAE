@@ -1,0 +1,43 @@
+require('dotenv').config();
+const mongoose = require('mongoose');
+const UserModel = require('./models/User');
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  console.error('❌ Error: ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env');
+  process.exit(1);
+}
+const ADMIN_NAME = 'Admin';
+
+async function createAdmin() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB Connected ✅');
+
+    const existing = await UserModel.findOne({ email: ADMIN_EMAIL });
+    if (existing) {
+      console.log(`Admin already exists with email: ${ADMIN_EMAIL}`);
+      process.exit(0);
+    }
+
+    await UserModel.create({
+      name: ADMIN_NAME,
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
+      role: 'admin',
+    });
+
+    console.log(`✅ Admin created successfully!`);
+    console.log(`   Email   : ${ADMIN_EMAIL}`);
+    console.log(`   Password: ${ADMIN_PASSWORD}`);
+  } catch (error) {
+    console.error('❌ Error creating admin:', error.message);
+  } finally {
+    await mongoose.disconnect();
+    process.exit(0);
+  }
+}
+
+createAdmin();
