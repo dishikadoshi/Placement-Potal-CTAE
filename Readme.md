@@ -126,4 +126,4 @@ The application will be available at:
 ---
 
 **Developed for the CTAE Placement Cell.**
-**By Pratiksha Vaya**
+**By Dishika Doshi**
